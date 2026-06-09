@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %} search.query  —  app_name {% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-head">
+    <div>
+      <h1> search.query </h1>
+      <p class="muted">
+         search.total_found  accounts ·
+        engines: {% for t in search.tool_list %}<span class="badge"> t </span> {% endfor %} ·
+         search.created_at.strftime('%Y-%m-%d %H:%M') if search.created_at else '' 
+      </p>
+    </div>
+    <div class="actions">
+      <a class="btn btn-primary" href="/history/ search.id /pdf">Export PDF</a>
+      <a class="btn btn-ghost" href="/history">Back</a>
+    </div>
+  </div>
+
+  {% if search.status == 'engines_unavailable' %}
+    <div class="alert alert-warn">Engines were unavailable on the server when this search ran.</div>
+  {% elif search.status == 'partial' %}
+    <div class="alert alert-warn">Only some engines were available for this search.</div>
+  {% endif %}
+
+  {% if grouped %}
+    {% for tool, results in grouped.items() %}
+    <h2 class="section"> tool|capitalize  <span class="muted">( results|length )</span></h2>
+    <table class="table">
+      <thead><tr><th>Site</th><th>URL</th></tr></thead>
+      <tbody>
+        {% for r in results %}
+        <tr>
+          <td> r.site_name </td>
+          <td><a class="link" href=" r.url " target="_blank" rel="noopener noreferrer"> r.url </a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endfor %}
+  {% else %}
+    <p class="muted">No accounts were found for this username.</p>
+  {% endif %}
+</div>
+{% endblock %}

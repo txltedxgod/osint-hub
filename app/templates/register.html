@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Register —  app_name {% endblock %}
+{% block content %}
+<div class="auth-card">
+  <h1>Create account</h1>
+  <p class="muted">The first account created becomes the administrator.</p>
+  {% if error %}<div class="alert alert-error"> error </div>{% endif %}
+  <form method="post" action="/register" class="form">
+    <label>Username
+      <input type="text" name="username" value=" username or '' " minlength="3" maxlength="64" required autofocus />
+    </label>
+    <label>Password
+      <input type="password" name="password" minlength="6" required />
+    </label>
+    <label>Repeat password
+      <input type="password" name="password2" minlength="6" required />
+    </label>
+    <button class="btn btn-primary btn-block" type="submit">Register</button>
+  </form>
+  <p class="muted center">Already registered? <a href="/login">Sign in</a></p>
+</div>
+{% endblock %}

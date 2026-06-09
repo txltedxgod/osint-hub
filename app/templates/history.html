@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}History —  app_name {% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Search history</h1>
+  {% if searches %}
+  <table class="table">
+    <thead><tr><th>Username</th><th>Engines</th><th>Found</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for s in searches %}
+      <tr>
+        <td><a href="/history/ s.id "> s.query </a></td>
+        <td>{% for t in s.tool_list %}<span class="badge"> t </span> {% endfor %}</td>
+        <td><strong> s.total_found </strong></td>
+        <td>
+          {% if s.status == 'completed' %}<span class="badge badge-ok">completed</span>
+          {% elif s.status == 'partial' %}<span class="badge badge-warn">partial</span>
+          {% else %}<span class="badge badge-err"> s.status </span>{% endif %}
+        </td>
+        <td class="muted"> s.created_at.strftime('%Y-%m-%d %H:%M') if s.created_at else '' </td>
+        <td class="actions">
+          <a class="link" href="/history/ s.id ">Open</a>
+          <a class="link" href="/history/ s.id /pdf">PDF</a>
+          <form method="post" action="/history/ s.id /delete" onsubmit="return confirm('Delete this search?');">
+            <button class="link link-danger" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No searches recorded yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

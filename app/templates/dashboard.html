@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Dashboard —  app_name {% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Username Intelligence</h1>
+  <p class="muted">Search a username across hundreds of sites with Sherlock &amp; Maigret.</p>
+</section>
+
+<div class="grid stats">
+  <div class="card stat"><div class="stat-value"> searches|length </div><div class="stat-label">Recent searches</div></div>
+  <div class="card stat"><div class="stat-value"> total_accounts </div><div class="stat-label">Accounts found</div></div>
+  <div class="card stat">
+    <div class="stat-value">
+      {% if engines.sherlock %}<span class="dot dot-on"></span>{% else %}<span class="dot dot-off"></span>{% endif %}
+      {% if engines.maigret %}<span class="dot dot-on"></span>{% else %}<span class="dot dot-off"></span>{% endif %}
+    </div>
+    <div class="stat-label">Engines online</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>New lookup</h2>
+  {% if error %}<div class="alert alert-error"> error </div>{% endif %}
+  {% if not engines.sherlock and not engines.maigret %}
+    <div class="alert alert-warn">No engines detected on the server. Install Sherlock / Maigret (they ship in the Docker image).</div>
+  {% endif %}
+  <form method="post" action="/search" class="form search-form">
+    <label>Target username
+      <input type="text" name="username" value=" username or '' " placeholder="e.g. johndoe" pattern="[A-Za-z0-9_.\-]{2,64}" required />
+    </label>
+    <div class="engines">
+      <label class="check">
+        <input type="checkbox" name="tools" value="sherlock" checked {% if not engines.sherlock %}disabled{% endif %} />
+        Sherlock {% if not engines.sherlock %}<span class="muted">(offline)</span>{% endif %}
+      </label>
+      <label class="check">
+        <input type="checkbox" name="tools" value="maigret" checked {% if not engines.maigret %}disabled{% endif %} />
+        Maigret {% if not engines.maigret %}<span class="muted">(offline)</span>{% endif %}
+      </label>
+    </div>
+    <button class="btn btn-primary" type="submit">Run search</button>
+    <p class="muted small">Scans can take a minute or two depending on the engines and timeouts.</p>
+  </form>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <h2>Recent searches</h2>
+    <a class="btn btn-ghost" href="/history">View all</a>
+  </div>
+  {% if searches %}
+  <table class="table">
+    <thead><tr><th>Username</th><th>Engines</th><th>Found</th><th>Date</th><th></th></tr></thead>
+    <tbody>
+      {% for s in searches %}
+      <tr>
+        <td><a href="/history/ s.id "> s.query </a></td>
+        <td>{% for t in s.tool_list %}<span class="badge"> t </span> {% endfor %}</td>
+        <td><strong> s.total_found </strong></td>
+        <td class="muted"> s.created_at.strftime('%Y-%m-%d %H:%M') if s.created_at else '' </td>
+        <td><a class="link" href="/history/ s.id ">Open</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No searches yet. Run your first lookup above.</p>
+  {% endif %}
+</div>
+{% endblock %}

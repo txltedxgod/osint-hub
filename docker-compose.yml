@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    container_name: osint-hub
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Keep the SQLite database inside the mounted volume
+      DATABASE_URL: sqlite+aiosqlite:///./data/osint_hub.db
+      REPORTS_DIR: ./data/reports
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data

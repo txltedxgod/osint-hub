@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %} app_name {% endblock %}</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark">◉</span>  app_name 
+      <span class="brand-ver">v app_version </span>
+    </a>
+    <nav class="nav">
+      {% if user %}
+        <a href="/">Dashboard</a>
+        <a href="/history">History</a>
+        <span class="nav-user">
+           user.username {% if user.is_admin %} <span class="badge badge-admin">admin</span>{% endif %}
+        </span>
+        <a class="btn btn-ghost" href="/logout">Logout</a>
+      {% else %}
+        <a href="/login">Login</a>
+        <a class="btn btn-primary" href="/register">Register</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <span> app_name  v app_version </span>
+    <span>For authorized OSINT research only.</span>
+  </footer>
+</body>
+</html>

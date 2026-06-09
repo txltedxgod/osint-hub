@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Runtime data
+data/*.db
+data/*.db-journal
+data/reports/*.pdf
+
+.DS_Store
+.idea/
+.vscode/
