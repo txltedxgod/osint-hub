@@ -8,7 +8,7 @@ pydantic-settings==2.6.1
 
 # Database (async SQLite)
 SQLAlchemy[asyncio]==2.0.36
-aiosqlite==0.20.0
+aiosqlite==0.22.1
 
 # PDF export
 reportlab==4.2.5
