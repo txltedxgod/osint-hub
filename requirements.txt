@@ -7,7 +7,7 @@ itsdangerous==2.2.0
 pydantic-settings==2.6.1
 
 # Database (async SQLite)
-SQLAlchemy[asyncio]==2.0.36
+SQLAlchemy[asyncio]==2.0.52
 aiosqlite==0.20.0
 
 # PDF export
