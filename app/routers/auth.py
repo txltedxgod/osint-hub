@@ -9,7 +9,6 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_session
-from app.dependencies import get_current_user
 from app.models import User
 from app.security import hash_password, verify_password
 from app.templating import templates

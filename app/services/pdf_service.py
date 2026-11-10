@@ -1,7 +1,8 @@
 """Render an OSINT search result into a PDF report (reportlab)."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
+import html
+from datetime import UTC, datetime
 from io import BytesIO
 
 from reportlab.lib import colors
@@ -67,16 +68,19 @@ def build_search_pdf(search: Search) -> bytes:
     styles = _styles()
     story: list = []
 
+    safe_query = html.escape(search.query)
+    safe_tools = html.escape(", ".join(search.tool_list) or "—")
+
     story.append(Paragraph("OSINT Hub — Report", styles["HubTitle"]))
     story.append(
         Paragraph(
-            f"Target username: <b>{search.query}</b>", styles["Meta"]
+            f"Target username: <b>{safe_query}</b>", styles["Meta"]
         )
     )
-    created = search.created_at or datetime.now(timezone.utc)
+    created = search.created_at or datetime.now(UTC)
     story.append(
         Paragraph(
-            f"Engines: {', '.join(search.tool_list) or '—'} &nbsp;|&nbsp; "
+            f"Engines: {safe_tools} &nbsp;|&nbsp; "
             f"Accounts found: {search.total_found} &nbsp;|&nbsp; "
             f"Generated: {created:%Y-%m-%d %H:%M UTC}",
             styles["Meta"],

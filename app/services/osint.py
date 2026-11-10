@@ -63,7 +63,7 @@ async def _run(cmd: list[str], timeout: int) -> tuple[int | None, str, str]:
         stdout, stderr = await asyncio.wait_for(
             proc.communicate(), timeout=timeout
         )
-    except asyncio.TimeoutError:
+    except TimeoutError:
         proc.kill()
         await proc.wait()
         return None, "", f"timed out after {timeout}s"
