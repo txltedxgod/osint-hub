@@ -25,9 +25,9 @@ async def dashboard(
     searches = await search_service.list_searches(session, user, limit=10)
     total_accounts = sum(s.total_found for s in searches)
     return templates.TemplateResponse(
-        "dashboard.html",
-        {
-            "request": request,
+        request=request,
+        name="dashboard.html",
+        context={
             "user": user,
             "searches": searches,
             "engines": osint.available_engines(),
@@ -54,9 +54,9 @@ async def run_search(
     except SearchError as exc:
         searches = await search_service.list_searches(session, user, limit=10)
         return templates.TemplateResponse(
-            "dashboard.html",
-            {
-                "request": request,
+            request=request,
+            name="dashboard.html",
+            context={
                 "user": user,
                 "searches": searches,
                 "engines": osint.available_engines(),

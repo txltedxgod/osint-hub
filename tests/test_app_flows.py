@@ -1,4 +1,4 @@
-"""Integration tests covering auth, search persistence, IDOR protection, and PDF export."""
+"""Integration tests covering auth, HTML views, search persistence, IDOR, and PDF export."""
 from __future__ import annotations
 
 from collections.abc import Iterator
@@ -62,10 +62,13 @@ def isolated_client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator
         yield client
 
 
-def test_health_and_anonymous_redirect(isolated_client: TestClient) -> None:
+def test_health_and_html_auth_views(isolated_client: TestClient) -> None:
     res = isolated_client.get("/health")
     assert res.status_code == 200
     assert res.json()["status"] == "healthy"
+
+    assert isolated_client.get("/login").status_code == 200
+    assert isolated_client.get("/register").status_code == 200
 
     dash = isolated_client.get("/", follow_redirects=False)
     assert dash.status_code == 303
@@ -73,13 +76,13 @@ def test_health_and_anonymous_redirect(isolated_client: TestClient) -> None:
 
 
 def test_register_search_pdf_and_idor_isolation(isolated_client: TestClient) -> None:
-    # First registered user signs in automatically and accesses dashboard
     reg1 = isolated_client.post(
         "/register",
         data={"username": "alice_admin", "password": "password123", "password2": "password123"},
         follow_redirects=False,
     )
     assert reg1.status_code == 303
+    assert isolated_client.get("/").status_code == 200
 
     search_resp = isolated_client.post(
         "/search",
@@ -89,13 +92,14 @@ def test_register_search_pdf_and_idor_isolation(isolated_client: TestClient) -> 
     assert search_resp.status_code == 303
     history_location = search_resp.headers["location"]
     assert history_location.startswith("/history/")
+    assert isolated_client.get("/history").status_code == 200
+    assert isolated_client.get(history_location).status_code == 200
 
     pdf_resp = isolated_client.get(f"{history_location}/pdf")
     assert pdf_resp.status_code == 200
     assert pdf_resp.headers["content-type"] == "application/pdf"
     assert pdf_resp.content.startswith(b"%PDF-")
 
-    # Logout and register a second non-admin user -> must not see alice's search
     isolated_client.get("/logout", follow_redirects=False)
     reg2 = isolated_client.post(
         "/register",

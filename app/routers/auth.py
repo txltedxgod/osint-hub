@@ -20,7 +20,7 @@ router = APIRouter(tags=["auth"])
 @router.get("/register", response_class=HTMLResponse)
 async def register_form(request: Request):
     return templates.TemplateResponse(
-        "register.html", {"request": request, "user": None}
+        request=request, name="register.html", context={"user": None}
     )
 
 
@@ -49,8 +49,9 @@ async def register(
 
     if error:
         return templates.TemplateResponse(
-            "register.html",
-            {"request": request, "user": None, "error": error, "username": username},
+            request=request,
+            name="register.html",
+            context={"user": None, "error": error, "username": username},
             status_code=400,
         )
 
@@ -75,7 +76,7 @@ async def register(
 @router.get("/login", response_class=HTMLResponse)
 async def login_form(request: Request):
     return templates.TemplateResponse(
-        "login.html", {"request": request, "user": None}
+        request=request, name="login.html", context={"user": None}
     )
 
 
@@ -92,9 +93,9 @@ async def login(
     )
     if not user or not verify_password(password, user.password_hash, user.salt):
         return templates.TemplateResponse(
-            "login.html",
-            {
-                "request": request,
+            request=request,
+            name="login.html",
+            context={
                 "user": None,
                 "error": "Invalid username or password.",
                 "username": username,

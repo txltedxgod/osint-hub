@@ -25,8 +25,9 @@ async def history(
         return RedirectResponse("/login", status_code=303)
     searches = await search_service.list_searches(session, user, limit=200)
     return templates.TemplateResponse(
-        "history.html",
-        {"request": request, "user": user, "searches": searches},
+        request=request,
+        name="history.html",
+        context={"user": user, "searches": searches},
     )
 
 
@@ -47,9 +48,9 @@ async def history_detail(
     for res in search.results:
         grouped[res.tool].append(res)
     return templates.TemplateResponse(
-        "history_detail.html",
-        {
-            "request": request,
+        request=request,
+        name="history_detail.html",
+        context={
             "user": user,
             "search": search,
             "grouped": dict(grouped),
