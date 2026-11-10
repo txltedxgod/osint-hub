@@ -24,11 +24,11 @@ logger = logging.getLogger("osint_hub")
 def _ensure_dirs() -> None:
     os.makedirs(settings.reports_dir, exist_ok=True)
     if settings.database_url.startswith("sqlite"):
-        # sqlite+aiosqlite:///./data/osint_hub.db -> ./data
         path = settings.database_url.split(":///")[-1]
-        parent = os.path.dirname(path)
-        if parent:
-            os.makedirs(parent, exist_ok=True)
+        if path and path != ":memory:":
+            parent = os.path.dirname(path)
+            if parent:
+                os.makedirs(parent, exist_ok=True)
 
 
 @asynccontextmanager
@@ -51,6 +51,12 @@ def create_app() -> FastAPI:
     app.include_router(auth.router)
     app.include_router(search.router)
     app.include_router(history.router)
+
+    @app.get("/health", tags=["system"])
+    async def health() -> dict[str, str]:
+        """Liveness check endpoint."""
+        return {"status": "healthy", "version": __version__}
+
     return app
 
 

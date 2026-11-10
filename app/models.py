@@ -36,7 +36,7 @@ class User(Base):
         DateTime(timezone=True), server_default=func.now()
     )
 
-    searches: Mapped[list["Search"]] = relationship(
+    searches: Mapped[list[Search]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan",
         order_by="Search.created_at.desc()",
@@ -59,8 +59,8 @@ class Search(Base):
         DateTime(timezone=True), server_default=func.now(), index=True
     )
 
-    user: Mapped["User"] = relationship(back_populates="searches")
-    results: Mapped[list["Result"]] = relationship(
+    user: Mapped[User] = relationship(back_populates="searches")
+    results: Mapped[list[Result]] = relationship(
         back_populates="search",
         cascade="all, delete-orphan",
         lazy="selectin",
@@ -83,4 +83,4 @@ class Result(Base):
     site_name: Mapped[str] = mapped_column(String(128))
     url: Mapped[str] = mapped_column(Text, default="")
 
-    search: Mapped["Search"] = relationship(back_populates="results")
+    search: Mapped[Search] = relationship(back_populates="results")
